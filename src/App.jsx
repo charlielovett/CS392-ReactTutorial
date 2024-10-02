@@ -5,7 +5,6 @@ import './App.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useJsonQuery } from './utilities/fetch';
 import Banner from './components/Banner';
-import CourseList from './components/CourseList';
 import TermPage from './components/TermPage';
 
 const queryClient = new QueryClient();
@@ -16,7 +15,6 @@ const App = () => {
   if (error) return <h1>Error loading class data: {`${error}`}</h1>;
   if (isLoading) return <h1>Loading class data...</h1>;
   if (!data) return <h1>No class data found</h1>;
-  console.log(data)
 
   return (
     <QueryClientProvider client={queryClient}>
