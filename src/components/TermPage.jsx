@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CourseList from "./CourseList";
+import ScheduleModal from "./ScheduleModal";
 
 const terms = {
     Fall: 'Fall',
@@ -30,9 +31,9 @@ const TermSelector = ({ termSelection, setTermSelection }) => (
 const TermPage = ({ courses }) => {
     const [termSelection, setTermSelection] = useState(() => Object.keys(terms)[0]);
     const [courseSelection, setCourseSelection] = useState([])
+    const [open, setOpen] = useState(false);
 
     const toggleSelected = (courseId) => {
-        console.log(courseSelection)
         setCourseSelection(
             courseSelection.includes(courseId)
                 ? courseSelection.filter(x => x !== courseId)
@@ -40,9 +41,36 @@ const TermPage = ({ courses }) => {
         );
     }
 
+    const openModal = () => setOpen(true);
+    const closeModal = () => setOpen(false);
+
     return (
         <div>
-            <TermSelector termSelection={termSelection} setTermSelection={setTermSelection} />
+            <ScheduleModal open={open} close={closeModal}>
+                <h1>Schedule</h1>
+                <div>
+                    {
+                        Object.entries(courses)
+                            .filter(([courseId]) => courseSelection.includes(courseId))
+                            .length === 0
+                            ? <p>You have not selected any courses. First, select your desired term, then click on your courses.</p> :
+                            (
+                                Object.entries(courses)
+                                    .filter(([courseId]) => courseSelection.includes(courseId))
+                                    .map(([courseId, course]) => (
+                                        <div key={courseId}>
+                                            <p>{course.term} CS {course.number}: {course.title} -- {course.meets}</p>
+                                        </div>
+                                    ))
+                            )
+                    }
+                </div>
+
+            </ScheduleModal>
+            <div className="d-flex justify-content-between align-items-center">
+                <TermSelector termSelection={termSelection} setTermSelection={setTermSelection} />
+                <button className="btn btn-outline-dark" onClick={openModal}>Class Schedule</button>
+            </div>
             <p className="my-2">Term: {termSelection}</p>
             <CourseList courses={courses} term={termSelection} courseSelection={courseSelection} toggleSelected={toggleSelected} />
         </div>
