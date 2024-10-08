@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CourseList from "./CourseList";
 import ScheduleModal from "./ScheduleModal";
+import { isConflict } from "../utilities/timeConflicts";
 
 const terms = {
     Fall: 'Fall',
@@ -30,8 +31,9 @@ const TermSelector = ({ termSelection, setTermSelection }) => (
 
 const TermPage = ({ courses }) => {
     const [termSelection, setTermSelection] = useState(() => Object.keys(terms)[0]);
-    const [courseSelection, setCourseSelection] = useState([])
+    const [courseSelection, setCourseSelection] = useState([]);
     const [open, setOpen] = useState(false);
+    const [disabled, setDisabled] = useState([]);
 
     const toggleSelected = (courseId) => {
         setCourseSelection(
@@ -40,6 +42,21 @@ const TermPage = ({ courses }) => {
                 : [...courseSelection, courseId]
         );
     }
+
+    useEffect(() => {
+        const scheduleTimes = courseSelection.map(courseId => `${courses[courseId].term},${courses[courseId].meets}`);
+        const newDisabled = [];
+    
+        for (const [courseKey, course] of Object.entries(courses)) {
+            const courseTime = `${course.term},${course.meets}`
+            if (!courseSelection.includes(courseKey) && isConflict(courseTime, scheduleTimes)) {
+                newDisabled.push(courseKey);
+            }
+        }
+    
+        setDisabled(newDisabled);
+    
+    }, [courseSelection, courses]);
 
     const openModal = () => setOpen(true);
     const closeModal = () => setOpen(false);
@@ -72,7 +89,7 @@ const TermPage = ({ courses }) => {
                 <button className="btn btn-outline-dark" onClick={openModal}>Class Schedule</button>
             </div>
             <p className="my-2">Term: {termSelection}</p>
-            <CourseList courses={courses} term={termSelection} courseSelection={courseSelection} toggleSelected={toggleSelected} />
+            <CourseList courses={courses} term={termSelection} courseSelection={courseSelection} toggleSelected={toggleSelected} disabled={disabled}/>
         </div>
     );
 }
