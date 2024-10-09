@@ -24,12 +24,6 @@ const timesOverlap = (timeA, timeB) => {
     const [timeBStart, timeBEnd] = timeB.split('-');
 
     return isEarlier(timeAStart, timeBEnd) && isEarlier(timeBStart, timeAEnd);
-
-
-    // const overlapA = isEarlier(timeAStart, timeBEnd) && isEarlier(timeBEnd, timeAEnd);
-    // const overlapB = isEarlier(timeBStart, timeAEnd) && isEarlier(timeAEnd, timeBEnd);
-
-    // return overlapA || overlapB;
 }
 
 const isPairwiseConflict = (a, b) => {

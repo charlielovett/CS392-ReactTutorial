@@ -1,3 +1,6 @@
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Link } from 'react-router-dom';
+
 const CourseList = ({ courses, term, courseSelection, toggleSelected, disabled }) => (
     <div className="course-list gap-2">
         {Object.entries(courses)
@@ -21,7 +24,12 @@ const CourseList = ({ courses, term, courseSelection, toggleSelected, disabled }
                                 <h5 className="card-title">{course.term} CS {course.number}</h5>
                                 <p className="card-text flex-grow-1">{course.title}</p>
                                 <hr className="mt-auto"></hr>
-                                <p className="card-text mt-auto">{course.meets}</p>
+                                <div className="d-flex flex-row justify-content-between mt-auto">
+                                    <p className="card-text">{course.meets}</p>
+                                    <Link to={`/form/${courseId}`} onClick={(event) => event.stopPropagation()}>
+                                        <i className="bi bi-pencil-square h4"></i>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
