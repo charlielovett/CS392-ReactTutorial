@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useFormData } from '../utilities/useFormData';
-
+import { useDbUpdate } from '../utilities/firebase';
 
 const validateUserData = (key, val) => {
     switch (key) {
         case 'title':
             return /(^\w\w)/.test(val) ? '' : 'must be least two characters';
-        case 'meetingTimes':
+        case 'meets':
             return /^(?:(M|Tu|W|Th|F)(?!.*\1))+ \d{2}:\d{2}-\d{2}:\d{2}$/.test(val) ? '' : 'must match DAY HH:MM-HH:MM';
         default: return '';
     }
@@ -34,24 +34,27 @@ const ButtonBar = ({ disabled }) => {
 };
 
 const CourseForm = ({ course }) => {
+    const navigate = useNavigate();
+    const { courseId } = useParams();
     const initialValues = {
         title: course.title || '',
-        meetingTimes: course.meets || '',
+        meets: course.meets || '',
     };
-
+    const [update, result] = useDbUpdate(`/courses/${courseId}`);
     const [state, change] = useFormData(validateUserData, initialValues);
     const submit = (evt) => {
         evt.preventDefault();
         if (!state.errors) {
             update(state.values);
+            navigate(-1);
         }
     };
 
     return (
         <div>
             <form onSubmit={submit} noValidate className={state.errors ? 'was-validated' : null}>
-                <InputField name="title" text="Class Title" state={state} change={change}/>
-                <InputField name="meetingTimes" text="Meeting Times" state={state} change={change}/>
+                <InputField name="title" text="Class Title" state={state} change={change} />
+                <InputField name="meets" text="Meeting Times" state={state} change={change} />
                 <ButtonBar />
             </form>
         </div>
