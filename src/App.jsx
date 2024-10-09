@@ -1,11 +1,11 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Banner from './components/Banner';
 import TermPage from './components/TermPage';
 import CourseForm from "./components/CourseForm";
-import { useParams } from "react-router-dom";
+import Navigation from "./components/Navigation";
 import { useDbData } from "./utilities/firebase";
 
 const queryClient = new QueryClient();
@@ -19,6 +19,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <Navigation />
         <Routes>
           <Route path="/" element={
             <div className="container my-5">
