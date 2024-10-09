@@ -1,42 +1,58 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useFormData } from '../utilities/useFormData';
+
+
+const validateUserData = (key, val) => {
+    switch (key) {
+        case 'title':
+            return /(^\w\w)/.test(val) ? '' : 'must be least two characters';
+        case 'meetingTimes':
+            return /^(?:(M|Tu|W|Th|F)(?!.*\1))+ \d{2}:\d{2}-\d{2}:\d{2}$/.test(val) ? '' : 'must match DAY HH:MM-HH:MM';
+        default: return '';
+    }
+};
+
+
+const InputField = ({ name, text, state, change }) => (
+    <div className="mb-3">
+        <label htmlFor={name} className="form-label">{text}</label>
+        <input className="form-control" id={name} name={name}
+            defaultValue={state.values?.[name]} onChange={change} />
+        <div className="invalid-feedback">{state.errors?.[name]}</div>
+    </div>
+);
+
+const ButtonBar = ({ disabled }) => {
+    const navigate = useNavigate();
+    return (
+        <div className="d-flex">
+            <button type="button" className="btn btn-outline-dark me-2" onClick={() => navigate(-1)}>Cancel</button>
+            <button type="submit" className="btn btn-primary me-auto" disabled={disabled}>Submit</button>
+        </div>
+    );
+};
 
 const CourseForm = ({ course }) => {
-    const navigate = useNavigate();
-
-    const [title, setTitle] = useState(course.title);
-    const [meetingTimes, setMeetingTimes] = useState(course.meets);
-
-    const handleCancel = () => {
-        navigate('/')
+    const initialValues = {
+        title: course.title || '',
+        meetingTimes: course.meets || '',
     };
 
-    const handleSubmit = (event) => {
-        // nothing
+    const [state, change] = useFormData(validateUserData, initialValues);
+    const submit = (evt) => {
+        evt.preventDefault();
+        if (!state.errors) {
+            update(state.values);
+        }
     };
 
     return (
         <div>
-            <form className="d-flex flex-column gap-4 align-items-start" onSubmit={handleSubmit}>
-                <label className="d-flex align-items-center gap-3">
-                    Class Title:
-                    <input
-                        type="text"
-                        name="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)} // Update state when user types
-                    />
-                </label>
-                <label className="d-flex align-items-center gap-3">
-                    Meeting Times:
-                    <input
-                        type="text"
-                        name="meetingTimes"
-                        value={meetingTimes}
-                        onChange={(e) => setMeetingTimes(e.target.value)} // Update state when user types
-                    />
-                </label>
-                <button onClick={handleCancel} className='btn btn-secondary'>Cancel</button>
+            <form onSubmit={submit} noValidate className={state.errors ? 'was-validated' : null}>
+                <InputField name="title" text="Class Title" state={state} change={change}/>
+                <InputField name="meetingTimes" text="Meeting Times" state={state} change={change}/>
+                <ButtonBar />
             </form>
         </div>
     );
