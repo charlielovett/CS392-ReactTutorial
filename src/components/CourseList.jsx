@@ -1,9 +1,9 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link } from 'react-router-dom';
-import { useAuthState } from '../utilities/firebase'; // Import the useAuthState hook
+import { useProfile } from '../utilities/profile';
 
 const CourseList = ({ courses, term, courseSelection, toggleSelected, disabled }) => {
-    const [user] = useAuthState();
+    const [{user, isAdmin}, isLoading, error] = useProfile();
     
     return (
         <div className="course-list gap-2">
@@ -30,7 +30,7 @@ const CourseList = ({ courses, term, courseSelection, toggleSelected, disabled }
                                     <hr className="mt-auto"></hr>
                                     <div className="d-flex flex-row justify-content-between mt-auto">
                                         <p className="card-text">{course.meets}</p>
-                                        {user
+                                        {user && isAdmin
                                             ? <Link to={`/form/${courseId}`} onClick={(event) => event.stopPropagation()}>
                                                 <i className="bi bi-pencil-square h4"></i>
                                               </Link>
